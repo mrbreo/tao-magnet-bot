@@ -1,0 +1,44 @@
+{
+  "name": "tao-magnet-bot",
+  "version": "1.0.0",
+  "description": "Cross-chain arbitrage bot for TAO and Bittensor subnet alpha tokens",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:frontend": "cd frontend && npm run lint",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
+  },
+  "keywords": [
+    "arbitrage",
+    "bittensor",
+    "tao",
+    "cross-chain",
+    "defi",
+    "trading-bot"
+  ],
+  "author": "TAO Magnet Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.5"
+  },
+  "workspaces": [
+    "backend",
+    "frontend",
+    "shared"
+  ]
+} 
