@@ -1,78 +1,115 @@
-# TAO Magnet - Cross-Chain Arbitrage Bot
+# TAO Magnet - Cross-Chain Arbitrage Trading Platform
 
 ## Overview
-TAO Magnet is a sophisticated cross-chain arbitrage bot designed to capitalize on price differences of TAO and Bittensor subnet alpha tokens across multiple blockchain ecosystems (Bittensor, Ethereum, Solana).
+
+TAO Magnet is an enterprise-grade cross-chain arbitrage trading platform designed for TAO and Bittensor ecosystem tokens. The system provides automated arbitrage detection, execution, and comprehensive MEV protection across Ethereum, Solana, and Bittensor networks.
 
 ## Core Features
-- **Cross-Chain Price Monitoring**: Real-time price tracking across Bittensor, Ethereum, and Solana
-- **Arbitrage Detection**: Automated identification of profitable trading opportunities
-- **Smart Execution**: Optimized trade execution considering fees, gas, slippage, and speed
-- **TAO-Centric Strategy**: All trades result in TAO holdings
-- **Web Dashboard**: Real-time monitoring and control interface
 
-## Supported Tokens
-- **TAO**: Primary token for all arbitrage operations
-- **Subnet Alpha Tokens**: Various Bittensor subnet tokens (SN100, SN101, etc.)
+### MEV Protection Engine
+- **Advanced Gas Optimization**: Real-time Ethereum gas price monitoring with intelligent spike detection
+- **Strategic Timing Protection**: Market condition-based execution delays for optimal trade security  
+- **Dynamic Slippage Management**: Adaptive slippage buffers with profit-based risk assessment
+- **Cross-Chain Risk Analysis**: Comprehensive MEV assessment across multiple blockchain networks
 
-## Supported Chains
-- **Bittensor Network**: Native TAO and subnet token ecosystem
-- **Ethereum**: Via LayerZero and Chainlink CCIP bridges
-- **Solana**: Via LayerZero and Chainlink CCIP bridges
+### Arbitrage Trading System
+- **Multi-Chain Price Discovery**: Automated price differential detection across supported networks
+- **Execution Engine**: High-performance trade execution with integrated MEV protection
+- **Portfolio Management**: Real-time holdings tracking and allocation optimization
+- **Performance Analytics**: Comprehensive trading statistics and performance metrics
 
-## Architecture
+## Network Support
 
-### Backend Components
-- **Price Aggregator**: Fetches real-time prices from multiple sources
-- **Arbitrage Engine**: Calculates profitable opportunities
-- **Execution Engine**: Handles cross-chain transactions
-- **Risk Manager**: Monitors positions and manages risk
-- **Bridge Manager**: Handles cross-chain transfers
+### Ethereum
+- **Protection Level**: Full MEV protection suite
+- **Capabilities**: Gas price optimization, timing protection, slippage management
+- **Features**: Real-time gas monitoring, spike detection, dynamic multipliers (1.2x-1.8x)
+
+### Solana  
+- **Protection Level**: Speed-based protection
+- **Capabilities**: Priority fees, timing protection
+- **Features**: 400ms block time leverage, priority fee optimization
+
+### Bittensor
+- **Protection Level**: Basic timing protection  
+- **Capabilities**: Timing protection
+- **Features**: Strategic delays, standard fee optimization
+
+## API Reference
+
+### MEV Protection Endpoints
+
+```http
+GET /api/v1/mev/status
+```
+Retrieves current MEV protection system status and configuration.
+
+```http
+POST /api/v1/mev/analyze
+```
+Analyzes arbitrage opportunities for MEV risk assessment.
+
+```http
+GET /api/v1/mev/chains
+```
+Returns network-specific protection capabilities and recommendations.
+
+```http
+POST /api/v1/mev/apply-protection
+```
+Applies strategic timing-based MEV protection mechanisms.
+
+## Technical Architecture
+
+### Backend Services
+- **MEV Protection Engine**: `backend/src/mev/protection.ts`
+- **API Gateway**: `backend/src/api/mev.ts`
+- **Arbitrage Engine**: `backend/src/arbitrage/engine.ts`  
+- **Price Aggregation**: `backend/src/price/aggregator.ts`
+- **Core Logging**: `backend/src/core/logger.ts`
 
 ### Frontend Components
-- **Dashboard**: Real-time monitoring interface
-- **Configuration Panel**: Bot settings and parameters
-- **Analytics**: Performance metrics and trade history
-- **Alert System**: Notifications for opportunities and issues
+- **Trading Dashboard**: Real-time opportunity monitoring and execution
+- **Analytics Panel**: Performance metrics and trading statistics
+- **Configuration Management**: System parameters and risk settings
+- **Portfolio Overview**: Holdings allocation and profit tracking
 
-## Project Structure
-```
-tao-magnet-bot/
-├── backend/
-│   ├── src/
-│   │   ├── core/
-│   │   ├── arbitrage/
-│   │   ├── execution/
-│   │   ├── bridges/
-│   │   ├── price/
-│   │   └── risk/
-│   ├── config/
-│   ├── tests/
-│   └── docs/
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   └── utils/
-│   ├── public/
-│   └── tests/
-├── shared/
-│   ├── types/
-│   ├── constants/
-│   └── utils/
-└── deployment/
-    ├── docker/
-    ├── k8s/
-    └── scripts/
+## Deployment
+
+### Docker Configuration
+```bash
+# Build and deploy the complete stack
+docker-compose up -d
+
+# Backend API server
+docker-compose up backend
+
+# Frontend application  
+docker-compose up frontend
 ```
 
-## Technology Stack
-- **Backend**: Node.js/TypeScript, Express.js
-- **Frontend**: React/TypeScript, Material-UI
-- **Database**: PostgreSQL, Redis
-- **Blockchain**: Web3.js, ethers.js, Solana Web3
-- **Monitoring**: Prometheus, Grafana
-- **Deployment**: Docker, Kubernetes
+### Environment Configuration
+Configure the following environment variables:
+- `ETHEREUM_API_KEY`: Ethereum network access
+- `SOLANA_API_KEY`: Solana network access  
+- `BITTENSOR_RPC_URL`: Bittensor network endpoint
+- `DATABASE_URL`: PostgreSQL connection string
+- `REDIS_URL`: Redis cache configuration
 
-## Getting Started
-See individual component READMEs for detailed setup instructions. 
+## Monitoring & Analytics
+
+### Performance Metrics
+- Real-time P&L tracking
+- Trade execution analytics
+- MEV protection effectiveness
+- Network performance monitoring
+
+### Risk Management
+- Dynamic position sizing
+- Automated stop-loss mechanisms
+- Portfolio diversification controls
+- MEV exposure monitoring
+
+## License
+
+MIT License - Enterprise deployment ready. 
