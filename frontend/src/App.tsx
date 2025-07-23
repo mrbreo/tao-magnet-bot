@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Box } from '@mui/material';
@@ -13,8 +13,7 @@ import Analytics from './pages/Analytics/Analytics';
 import Settings from './pages/Settings/Settings';
 import Alerts from './pages/Alerts/Alerts';
 
-// Store
-import { useAppStore } from './store/appStore';
+
 
 // Create theme
 const theme = createTheme({
@@ -102,7 +101,6 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  const { isConnected } = useAppStore();
 
   return (
     <QueryClientProvider client={queryClient}>

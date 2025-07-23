@@ -40,6 +40,8 @@ interface AppState {
   setSelectedPage: (page: string) => void;
 }
 
+
+
 const defaultConfiguration: BotConfiguration = {
   minProfitThreshold: 10,
   maxSlippage: 0.5,
@@ -54,7 +56,7 @@ const defaultConfiguration: BotConfiguration = {
   }
 };
 
-export const useAppStore = create<AppState>((set, get) => ({
+export const useAppStore = create<AppState>((set) => ({
   // Initial state
   isConnected: false,
   connectionStatus: 'disconnected',

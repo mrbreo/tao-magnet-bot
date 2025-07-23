@@ -9,7 +9,7 @@ interface BestTradeTableProps {
   onExecute?: (opportunityId: string) => void;
 }
 
-const BestTradeTable: React.FC<BestTradeTableProps> = ({ opportunities, executionMode, bridgePreference, onExecute }) => {
+const BestTradeTable: React.FC<BestTradeTableProps> = ({ opportunities, executionMode, onExecute }) => {
   return (
     <Table size="small">
       <TableHead>

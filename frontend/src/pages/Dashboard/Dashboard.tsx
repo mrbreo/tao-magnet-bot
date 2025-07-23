@@ -6,17 +6,13 @@ import {
   CardContent,
   Typography,
   Chip,
-  LinearProgress,
   IconButton,
-  Tooltip,
-  Paper
+  Tooltip
 } from '@mui/material';
 import {
   TrendingUp,
-  TrendingDown,
   AccountBalance,
   ShowChart,
-  Notifications,
   Settings,
   PlayArrow,
   Pause
@@ -47,11 +43,9 @@ const Dashboard: React.FC = () => {
     opportunities,
     totalProfit,
     totalTrades,
-    currentPrices,
     addOpportunity,
     updateOpportunity,
-    setCurrentPrices,
-    updateProfit
+    setCurrentPrices
   } = useAppStore();
 
   const [isBotRunning, setIsBotRunning] = useState(false);
@@ -77,13 +71,13 @@ const Dashboard: React.FC = () => {
 
   // Update store with fetched data
   useEffect(() => {
-    if (priceData) {
-      setCurrentPrices(priceData);
+    if (priceData && typeof priceData === 'object') {
+      setCurrentPrices(priceData as Record<string, number>);
     }
   }, [priceData, setCurrentPrices]);
 
   useEffect(() => {
-    if (opportunitiesData) {
+    if (opportunitiesData && Array.isArray(opportunitiesData)) {
       opportunitiesData.forEach((opportunity: ArbitrageOpportunity) => {
         const existing = opportunities.find(opp => opp.id === opportunity.id);
         if (!existing) {
@@ -258,7 +252,7 @@ const Dashboard: React.FC = () => {
                 TAO Price Across Chains
               </Typography>
               <PriceChart 
-                data={priceData} 
+                data={priceData as Record<string, number>} 
                 isLoading={priceLoading}
                 height={300}
               />
