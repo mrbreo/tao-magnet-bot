@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Slider, RadioGroup, FormControlLabel, Radio, Grid } from '@mui/material';
+import { Box, Typography, Slider, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import { ConfigSettings } from '../../../../shared/types/config';
 
 interface ConfigPanelProps {
@@ -11,8 +11,11 @@ const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange }) => {
   const handleSlider = (field: string, value: number) => {
     if (field === 'minGainThreshold') {
       onChange({ ...config, minGainThreshold: value });
-    } else if (field === 'timeWeight' || field === 'gainWeight') {
-      const newPriority = { ...config.opportunityPriority, [field]: value };
+    } else if (field === 'opportunityPriority') {
+      // Single slider: 0 = Time priority, 100 = Gain priority
+      const timeWeight = 100 - value;
+      const gainWeight = value;
+      const newPriority = { timeWeight, gainWeight };
       onChange({ ...config, opportunityPriority: newPriority });
     }
   };
@@ -21,9 +24,19 @@ const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange }) => {
     onChange({ ...config, [field]: value });
   };
 
+  // Calculate opportunity priority slider value (0-100)
+  const opportunityPriorityValue = config.opportunityPriority.gainWeight;
+  const timePercentage = config.opportunityPriority.timeWeight;
+  const gainPercentage = config.opportunityPriority.gainWeight;
+
   return (
-    <Box>
-      <Typography variant="subtitle1">Minimum Gain Threshold</Typography>
+    <Box sx={{ pb: 2 }}>
+      <Typography variant="h3" sx={{ fontWeight: 600, mb: 2 }}>
+        Configuration
+      </Typography>
+      <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 1 }}>
+        Minimum Gain Threshold
+      </Typography>
       <Slider
         value={config.minGainThreshold}
         min={0}
@@ -31,49 +44,56 @@ const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange }) => {
         step={1}
         valueLabelDisplay="auto"
         onChange={(_, v) => handleSlider('minGainThreshold', v as number)}
+        sx={{ mb: 3 }}
       />
-      <Typography variant="subtitle1" sx={{ mt: 2 }}>Opportunity priority</Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <Typography>Time</Typography>
-          <Slider
-            value={config.opportunityPriority.timeWeight}
-            min={0}
-            max={100}
-            step={1}
-            valueLabelDisplay="auto"
-            onChange={(_, v) => handleSlider('timeWeight', v as number)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <Typography>Gain</Typography>
-          <Slider
-            value={config.opportunityPriority.gainWeight}
-            min={0}
-            max={100}
-            step={1}
-            valueLabelDisplay="auto"
-            onChange={(_, v) => handleSlider('gainWeight', v as number)}
-          />
-        </Grid>
-      </Grid>
-      <Typography variant="subtitle1" sx={{ mt: 2 }}>Bridge Preference</Typography>
+      <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 1 }}>
+        Opportunity priority
+      </Typography>
+      <Box sx={{ mb: 2 }}>
+        <Slider
+          value={opportunityPriorityValue}
+          min={0}
+          max={100}
+          step={1}
+          valueLabelDisplay="auto"
+          onChange={(_, v) => handleSlider('opportunityPriority', v as number)}
+          sx={{ mb: 1 }}
+        />
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="body2" color="text.secondary">Time</Typography>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Typography variant="body2" color="primary">
+              Time: {timePercentage}%
+            </Typography>
+            <Typography variant="body2" color="primary">
+              Gain: {gainPercentage}%
+            </Typography>
+          </Box>
+          <Typography variant="body2" color="text.secondary">Gain</Typography>
+        </Box>
+      </Box>
+      <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 1, mt: 2 }}>
+        Bridge Preference
+      </Typography>
       <RadioGroup
         row
         value={config.bridgePreference}
         onChange={(_, v) => handleRadio('bridgePreference', v)}
+        sx={{ mb: 2 }}
       >
-        <FormControlLabel value="best" control={<Radio />} label="Best Price" />
-        <FormControlLabel value="layerzero" control={<Radio />} label="LayerZero" />
+        <FormControlLabel value="best" control={<Radio />} label="Best Price" sx={{ mr: 3 }} />
+        <FormControlLabel value="layerzero" control={<Radio />} label="LayerZero" sx={{ mr: 3 }} />
         <FormControlLabel value="ccip" control={<Radio />} label="CCIP" />
       </RadioGroup>
-      <Typography variant="subtitle1" sx={{ mt: 2 }}>Execution Mode</Typography>
+      <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 1, mt: 2 }}>
+        Execution Mode
+      </Typography>
       <RadioGroup
         row
         value={config.executionMode}
         onChange={(_, v) => handleRadio('executionMode', v)}
       >
-        <FormControlLabel value="auto" control={<Radio />} label="Auto" />
+        <FormControlLabel value="auto" control={<Radio />} label="Auto" sx={{ mr: 3 }} />
         <FormControlLabel value="manual" control={<Radio />} label="Manual" />
       </RadioGroup>
     </Box>

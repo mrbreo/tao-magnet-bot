@@ -36,7 +36,8 @@
     "framer-motion": "^10.16.16",
     "react-beautiful-dnd": "^13.1.1",
     "react-countup": "^6.4.2",
-    "react-helmet-async": "^2.0.4"
+    "react-helmet-async": "^2.0.4",
+    "lightweight-charts": "^4.1.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

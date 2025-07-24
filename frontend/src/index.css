@@ -6,30 +6,26 @@
 
 body {
   font-family: 'Roboto', sans-serif;
+  background: #0a0a0a;
+  color: #fff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #0a0a0a;
-  color: #ffffff;
 }
 
 #root {
   min-height: 100vh;
 }
 
-/* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: #181a20;
 }
-
 ::-webkit-scrollbar-thumb {
   background: #333;
   border-radius: 4px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 } 
