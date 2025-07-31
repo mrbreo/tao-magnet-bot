@@ -1,5 +1,5 @@
 
-import React from 'react';
+// React import removed as it's not needed with React 17+ JSX transform
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Box } from '@mui/material';
 import Dashboard from './pages/Dashboard';

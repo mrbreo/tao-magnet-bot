@@ -1,174 +1,118 @@
-// Requires: npm install lightweight-charts
-import React, { useEffect, useRef, useState } from 'react';
-import { Box, Typography } from '@mui/material';
-import { createChart, LineData, IChartApi, ISeriesApi } from 'lightweight-charts';
+import React from 'react';
+import { Box, Typography, Button, ButtonGroup } from '@mui/material';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { TAOGainPoint } from '../../../../shared/types/stats';
 
 interface CumulativeGainChartProps {
   data: TAOGainPoint[];
+  range: string;
+  setRange: (range: string) => void;
 }
 
-export const StatsBox: React.FC = () => (
-  <Box sx={{ mt: 4 }}>
-    <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-      Total TAO netted: <span style={{ color: '#fff', fontWeight: 700 }}>+245 TAO</span>
-    </Typography>
-    <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-      Trades executed: <span style={{ color: '#fff', fontWeight: 700 }}>32</span>
-    </Typography>
-    <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-      Avg. detection latency: <span style={{ color: '#fff', fontWeight: 700 }}>10 ms</span>
-    </Typography>
-    <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-      Success rate: <span style={{ color: '#fff', fontWeight: 700 }}>94%</span>
-    </Typography>
-    <Typography variant="h6" color="text.secondary">
-      Avg. bridge latency: <span style={{ color: '#fff', fontWeight: 700 }}>1.1 s</span>
-    </Typography>
-  </Box>
-);
+const RANGE_OPTIONS = [
+  { label: '1D', days: 1 },
+  { label: '1W', days: 7 },
+  { label: '1M', days: 30 },
+  { label: '3M', days: 90 },
+  { label: '6M', days: 180 },
+  { label: 'YTD', days: 'ytd' },
+  { label: '1Y', days: 365 },
+  { label: '2Y', days: 730 },
+  { label: '5Y', days: 1825 },
+  { label: '10Y', days: 3650 },
+  { label: 'ALL', days: 'all' },
+];
 
-const NUM_TICKS = 12;
-
-const parseTime = (t: any) => {
-  if (typeof t === 'number') return t;
-  if (typeof t === 'string') return Date.parse(t);
-  if (typeof t === 'object' && t !== null && 'year' in t && 'month' in t && 'day' in t) {
-    const { year, month, day } = t;
-    return Date.UTC(year, month - 1, day);
-  }
-  return 0;
-};
-
-
-
-const CumulativeGainChart: React.FC<CumulativeGainChartProps> = ({ data }) => {
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-  const [chartError, setChartError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let chart: IChartApi | null = null;
-    let series: ISeriesApi<'Line'> | null = null;
-
-    const initChart = () => {
-      try {
-        if (!chartContainerRef.current) {
-          console.warn('Chart container not ready');
-          return;
-        }
-
-        if (chart) {
-          try { chart.remove(); } catch (e) { /* ignore */ }
-        }
-        if (!data || data.length === 0) return;
-
-        chart = createChart(chartContainerRef.current, {
-          width: chartContainerRef.current.clientWidth,
-          height: chartContainerRef.current.clientHeight,
-          layout: { background: { color: 'transparent' }, textColor: '#aaa' },
-          grid: { vertLines: { color: 'rgba(255,255,255,0.02)' }, horzLines: { color: 'rgba(255,255,255,0.05)' } },
-          rightPriceScale: { borderColor: '#222', scaleMargins: { top: 0.15, bottom: 0.15 } },
-          timeScale: { borderColor: '#222', timeVisible: true, secondsVisible: false },
-          crosshair: { mode: 1 },
-          watermark: { visible: false, fontSize: 0, text: '', color: 'transparent' },
-          handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: true },
-          handleScale: { axisPressedMouseMove: true, mouseWheel: true, pinch: true },
-          localization: {
-            timeFormatter: (timestamp: number) => {
-              const d = new Date(timestamp);
-              return `${d.getMonth() + 1}/${d.getDate()}`;
-            }
-          }
-        });
-
-        series = chart.addLineSeries({ color: '#3cf', lineWidth: 3, priceLineVisible: false, crosshairMarkerVisible: true });
-        const lineData: LineData[] = data
-          .filter(d => d.timestamp && d.value !== undefined)
-          .map(d => {
-            let timeStr = d.timestamp;
-            if (timeStr.length > 10) timeStr = timeStr.substring(0, 10);
-            return { time: timeStr, value: Number(d.value) };
-          })
-          .filter(d => !isNaN(d.value));
-        if (lineData.length === 0) return;
-        series.setData(lineData);
-
-        // --- Custom X Axis Zoom/Pan Logic ---
-        const minTime = lineData[0].time;
-        const maxTime = lineData[lineData.length - 1].time;
-        const minTimeNum = parseTime(minTime);
-        const maxTimeNum = parseTime(maxTime);
-        // Default: last 24h or all
-        const last24hNum = maxTimeNum - 24 * 60 * 60 * 1000;
-        let defaultFrom = minTimeNum > last24hNum ? minTimeNum : last24hNum;
-        if (defaultFrom < minTimeNum) defaultFrom = minTimeNum;
-        let defaultTo = maxTimeNum;
-        // Set initial visible range
-        chart.timeScale().setVisibleRange({ from: new Date(defaultFrom).toISOString().slice(0, 10), to: new Date(defaultTo).toISOString().slice(0, 10) });
-
-        // Clamp zoom/pan and always keep 12 ticks
-        chart.timeScale().subscribeVisibleTimeRangeChange((range) => {
-          if (!range || !chart) return;
-          let from = parseTime(range.from);
-          let to = parseTime(range.to);
-          let changed = false;
-          // Clamp to data range
-          if (from < minTimeNum) { from = minTimeNum; changed = true; }
-          if (to > maxTimeNum) { to = maxTimeNum; changed = true; }
-          // Prevent zooming out beyond data range
-          if ((to - from) > (maxTimeNum - minTimeNum)) { from = minTimeNum; to = maxTimeNum; changed = true; }
-          // Always keep 12 ticks
-          if ((to - from) > 0) {
-            const tickStep = (to - from) / (NUM_TICKS - 1);
-            const ticks: number[] = [];
-            for (let i = 0; i < NUM_TICKS; i++) {
-              ticks.push(from + i * tickStep);
-            }
-            // Set custom tick marks (not natively supported, so this is a visual approximation)
-            // The tickMarkFormatter will format these positions
-            // (Lightweight Charts does not support explicit tick positions, so this is a best effort)
-          }
-          if (changed) {
-            chart.timeScale().setVisibleRange({ from: new Date(from).toISOString().slice(0, 10), to: new Date(to).toISOString().slice(0, 10) });
-          }
-        });
-      } catch (error) {
-        console.error('Error initializing chart:', error);
-        setChartError('Failed to load chart');
-        return () => {};
-      }
-    };
-
-    const cleanup = initChart();
-    return cleanup;
-  }, [data]);
-
-  if (chartError) {
+const CumulativeGainChart: React.FC<CumulativeGainChartProps> = ({ data, range, setRange }) => {
     return (
-      <Box sx={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa' }}>
-        <Typography>{chartError}</Typography>
+    <Box sx={{ width: '100%', height: 260, bgcolor: 'transparent', p: 0 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#222' }}>
+          Cumulative TAO Gain
+        </Typography>
+        <ButtonGroup variant="outlined" size="small" sx={{ bgcolor: 'background.paper', borderRadius: 2 }}>
+          {RANGE_OPTIONS.map(opt => (
+            <Button
+              key={opt.label}
+              onClick={() => setRange(opt.label)}
+              variant={range === opt.label ? 'contained' : 'outlined'}
+              sx={{ minWidth: 36, px: 1, fontWeight: 600 }}
+            >
+              {opt.label}
+            </Button>
+          ))}
+        </ButtonGroup>
       </Box>
-    );
-  }
-
-  return (
-    <Box sx={{ 
-      width: '100%', 
-      height: 200, 
-      position: 'relative', 
-      overflow: 'hidden',
-      '& .tv-lightweight-charts': {
-        '& [title*="TradingView"], & [title*="Charting"]': {
-          display: 'none !important',
-        },
-        '& svg[title*="TradingView"], & svg[title*="Charting"]': {
-          display: 'none !important',
-        }
-      }
-    }}>
-      <Box ref={chartContainerRef} sx={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }} />
+      <ResponsiveContainer width="100%" height={200}>
+        <AreaChart data={data.length ? data : []} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+          <defs>
+            <linearGradient id="colorGain" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#4ade80" stopOpacity={0.5}/>
+              <stop offset="100%" stopColor="#4ade80" stopOpacity={0.05}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+          <XAxis dataKey="timestamp" tick={{ fontSize: 12, fill: '#888' }} minTickGap={16} />
+          <YAxis tick={{ fontSize: 12, fill: '#888' }} width={40} domain={['auto', 'auto']} />
+          <Tooltip
+            contentStyle={{ background: '#222', border: 'none', borderRadius: 8, color: '#fff' }}
+            labelStyle={{ color: '#fff' }}
+            formatter={(value: any) => [`${value} TAO`, 'Cumulative Gain']}
+          />
+          <Area
+            type="monotone"
+            dataKey="value"
+            stroke="#22c55e"
+            fill="url(#colorGain)"
+            strokeWidth={3}
+            dot={false}
+            isAnimationActive={true}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
     </Box>
   );
 };
 
 export default CumulativeGainChart; 
+
+export interface StatsBoxProps {
+  title?: string;
+  totalTAO: number;
+  trades: number;
+  avgLatency: string;
+  successRate: number;
+  avgBridgeLatency: string;
+}
+
+export const StatsBox: React.FC<StatsBoxProps> = ({ title, totalTAO, trades, avgLatency, successRate, avgBridgeLatency }) => (
+  <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1, bgcolor: 'background.paper', borderRadius: 2, p: 2, boxShadow: 1 }}>
+    {title && (
+      <Typography variant="subtitle2" sx={{ color: '#22c55e', fontWeight: 700, mb: 1, letterSpacing: 0.5 }}>
+        {title}
+      </Typography>
+    )}
+    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+      <Box>
+        <Typography variant="body2" color="text.secondary">Total TAO netted</Typography>
+        <Typography variant="h6" sx={{ color: '#22c55e', fontWeight: 700 }}>+{totalTAO} TAO</Typography>
+      </Box>
+      <Box>
+        <Typography variant="body2" color="text.secondary">Trades executed</Typography>
+        <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700 }}>{trades}</Typography>
+      </Box>
+      <Box>
+        <Typography variant="body2" color="text.secondary">Avg. detection latency</Typography>
+        <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700 }}>{avgLatency}</Typography>
+      </Box>
+      <Box>
+        <Typography variant="body2" color="text.secondary">Success rate</Typography>
+        <Typography variant="h6" sx={{ color: '#22c55e', fontWeight: 700 }}>{successRate}%</Typography>
+      </Box>
+      <Box>
+        <Typography variant="body2" color="text.secondary">Avg. bridge latency</Typography>
+        <Typography variant="h6" sx={{ color: '#fff', fontWeight: 700 }}>{avgBridgeLatency}</Typography>
+      </Box>
+    </Box>
+  </Box>
+); 

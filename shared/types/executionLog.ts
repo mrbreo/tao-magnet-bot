@@ -10,5 +10,5 @@ export interface ExecutionLogEntry {
   slippagePercent: string;
   fee: string;
   gainTAO: number;
-  status: 'done' | 'failed';
+  status: 'Done' | 'Failed';
 } 

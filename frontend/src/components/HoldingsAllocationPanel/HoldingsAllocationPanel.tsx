@@ -7,10 +7,6 @@ interface HoldingsAllocationPanelProps {
   onAllocate: (allocation: { bittensor: number; ethereum: number; solana: number }) => void;
 }
 
-const monoFont = {
-  fontFamily: 'Roboto Mono, monospace',
-};
-
 const HoldingsAllocationPanel: React.FC<HoldingsAllocationPanelProps> = ({ allocation, onAllocate }) => {
   const [bittensor, setBittensor] = useState(allocation.allocation.bittensor);
   const [ethereum, setEthereum] = useState(allocation.allocation.ethereum);
@@ -130,7 +126,7 @@ const HoldingsAllocationPanel: React.FC<HoldingsAllocationPanelProps> = ({ alloc
         <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 700, letterSpacing: 0.2 }}>
           Current TAO bal
         </Typography>
-        <Typography variant="h5" sx={{ ...monoFont, fontWeight: 700, fontSize: '2rem', color: '#fff' }}>
+        <Typography variant="h5" sx={{ fontWeight: 700, fontSize: '2rem', color: '#fff' }}>
           {allocation.taoBalance.toLocaleString()} TAO
         </Typography>
       </Box>
@@ -141,7 +137,7 @@ const HoldingsAllocationPanel: React.FC<HoldingsAllocationPanelProps> = ({ alloc
           <Typography variant="body1" color="text.secondary" sx={{ mb: 0.5, fontWeight: 500 }}>Bittensor</Typography>
         </Grid>
         <Grid item xs={6} sx={{ textAlign: 'right' }}>
-          <Typography variant="body1" sx={{ ...monoFont, fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>
+          <Typography variant="body1" sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>
             {Math.round(allocation.taoBalance * bittensor / 100)} TAO ({bittensor}%)
           </Typography>
         </Grid>
@@ -149,7 +145,7 @@ const HoldingsAllocationPanel: React.FC<HoldingsAllocationPanelProps> = ({ alloc
           <Typography variant="body1" color="text.secondary" sx={{ mb: 0.5, fontWeight: 500 }}>Ethereum</Typography>
         </Grid>
         <Grid item xs={6} sx={{ textAlign: 'right' }}>
-          <Typography variant="body1" sx={{ ...monoFont, fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>
+          <Typography variant="body1" sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>
             {Math.round(allocation.taoBalance * ethereum / 100)} TAO ({ethereum}%)
           </Typography>
         </Grid>
@@ -157,7 +153,7 @@ const HoldingsAllocationPanel: React.FC<HoldingsAllocationPanelProps> = ({ alloc
           <Typography variant="body1" color="text.secondary" sx={{ mb: 0.5, fontWeight: 500 }}>Solana</Typography>
         </Grid>
         <Grid item xs={6} sx={{ textAlign: 'right' }}>
-          <Typography variant="body1" sx={{ ...monoFont, fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>
+          <Typography variant="body1" sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>
             {Math.round(allocation.taoBalance * solana / 100)} TAO ({solana}%)
           </Typography>
         </Grid>
@@ -172,17 +168,17 @@ const HoldingsAllocationPanel: React.FC<HoldingsAllocationPanelProps> = ({ alloc
         <Grid item xs={12} sx={{ display: 'flex', alignItems: 'center', minHeight: 48 }}>
           <Typography variant="body1" sx={{ width: 90, fontWeight: 500 }}>Bittensor</Typography>
           <Slider value={bittensor} onChange={(_, v) => handleBittensorChange(v as number)} min={0} max={100} step={1} sx={{ flex: 1, mx: 2 }} size="medium" componentsProps={{ thumb: { style: { height: 22, width: 22 } } }} />
-          <Typography variant="body1" sx={{ ...monoFont, width: 44, textAlign: 'right', fontWeight: 700 }}>{bittensor}%</Typography>
+          <Typography variant="body1" sx={{ width: 44, textAlign: 'right', fontWeight: 700 }}>{bittensor}%</Typography>
         </Grid>
         <Grid item xs={12} sx={{ display: 'flex', alignItems: 'center', minHeight: 48 }}>
           <Typography variant="body1" sx={{ width: 90, fontWeight: 500 }}>Ethereum</Typography>
           <Slider value={ethereum} onChange={(_, v) => handleEthereumChange(v as number)} min={0} max={100} step={1} sx={{ flex: 1, mx: 2 }} size="medium" componentsProps={{ thumb: { style: { height: 22, width: 22 } } }} />
-          <Typography variant="body1" sx={{ ...monoFont, width: 44, textAlign: 'right', fontWeight: 700 }}>{ethereum}%</Typography>
+          <Typography variant="body1" sx={{ width: 44, textAlign: 'right', fontWeight: 700 }}>{ethereum}%</Typography>
         </Grid>
         <Grid item xs={12} sx={{ display: 'flex', alignItems: 'center', minHeight: 48 }}>
           <Typography variant="body1" sx={{ width: 90, fontWeight: 500 }}>Solana</Typography>
           <Slider value={solana} onChange={(_, v) => handleSolanaChange(v as number)} min={0} max={100} step={1} sx={{ flex: 1, mx: 2 }} size="medium" componentsProps={{ thumb: { style: { height: 22, width: 22 } } }} />
-          <Typography variant="body1" sx={{ ...monoFont, width: 44, textAlign: 'right', fontWeight: 700 }}>{solana}%</Typography>
+          <Typography variant="body1" sx={{ width: 44, textAlign: 'right', fontWeight: 700 }}>{solana}%</Typography>
         </Grid>
       </Grid>
       {/* Allocate button bottom right */}

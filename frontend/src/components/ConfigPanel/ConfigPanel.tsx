@@ -1,11 +1,14 @@
 import React from 'react';
-import { Box, Typography, Slider, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { Box, Typography, Slider, RadioGroup, FormControlLabel, Radio, TextField } from '@mui/material';
 import { ConfigSettings } from '../../../../shared/types/config';
 
 interface ConfigPanelProps {
   config: ConfigSettings;
   onChange: (config: ConfigSettings) => void;
 }
+
+const MIN_GAIN = 0;
+const MAX_GAIN = 100;
 
 const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange }) => {
   const handleSlider = (field: string, value: number) => {
@@ -20,6 +23,14 @@ const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange }) => {
     }
   };
 
+  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let value = Number(event.target.value);
+    if (isNaN(value)) value = MIN_GAIN;
+    if (value < MIN_GAIN) value = MIN_GAIN;
+    if (value > MAX_GAIN) value = MAX_GAIN;
+    onChange({ ...config, minGainThreshold: value });
+  };
+
   const handleRadio = (field: string, value: string) => {
     onChange({ ...config, [field]: value });
   };
@@ -31,21 +42,35 @@ const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange }) => {
 
   return (
     <Box sx={{ pb: 2 }}>
-      <Typography variant="h3" sx={{ fontWeight: 600, mb: 2 }}>
+      <Typography variant="h3" sx={{ fontWeight: 600, mb: 4 }}>
         Configuration
       </Typography>
-      <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 1 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2 }}>
+        <Typography variant="subtitle1" color="text.secondary" sx={{ fontWeight: 500 }}>
         Minimum Gain Threshold
       </Typography>
-      <Slider
+        <TextField
+          type="number"
         value={config.minGainThreshold}
-        min={0}
-        max={100}
-        step={1}
-        valueLabelDisplay="auto"
-        onChange={(_, v) => handleSlider('minGainThreshold', v as number)}
-        sx={{ mb: 3 }}
+          onChange={(event) => {
+            let value = Number(event.target.value);
+            if (isNaN(value)) value = MIN_GAIN;
+            if (value < MIN_GAIN) value = MIN_GAIN;
+            if (value > MAX_GAIN) value = MAX_GAIN;
+            handleSlider('minGainThreshold', value);
+          }}
+          inputProps={{ 
+            min: MIN_GAIN, 
+            max: MAX_GAIN, 
+            style: { width: 80 },
+            placeholder: "0-100"
+          }}
+          size="small"
+          InputProps={{
+            endAdornment: <Typography variant="body2" color="text.secondary">%</Typography>
+          }}
       />
+      </Box>
       <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 1 }}>
         Opportunity priority
       </Typography>
@@ -81,7 +106,7 @@ const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange }) => {
         onChange={(_, v) => handleRadio('bridgePreference', v)}
         sx={{ mb: 2 }}
       >
-        <FormControlLabel value="best" control={<Radio />} label="Best Price" sx={{ mr: 3 }} />
+        <FormControlLabel value="best" control={<Radio />} label="All" sx={{ mr: 3 }} />
         <FormControlLabel value="layerzero" control={<Radio />} label="LayerZero" sx={{ mr: 3 }} />
         <FormControlLabel value="ccip" control={<Radio />} label="CCIP" />
       </RadioGroup>
